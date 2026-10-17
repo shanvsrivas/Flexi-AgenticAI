@@ -1,0 +1,15 @@
+# Only the runtime application is sent to Docker's build context.
+**
+!Dockerfile
+!requirements.txt
+!backend/
+!backend/studybuddy/
+!backend/studybuddy/*.py
+!frontend/
+!frontend/app.py
+!frontend/assets/
+!frontend/assets/styles.css
+!.streamlit/
+!.streamlit/config.toml
+!scripts/
+!scripts/check_model.py

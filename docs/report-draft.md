@@ -9,11 +9,11 @@ Submission date: [Fill in]
 
 ## 1. Project overview
 
-StudyBuddy uses a local Qwen tutoring agent to select useful learning actions from a student's notes and quiz performance. It can create a quiz, explain a missed concept, work through an example, simplify an explanation, ask a clarification question, or recommend finishing. Feedback includes new explanations and relevant background information rather than only repeating source notes.
+StudyBuddy uses a tutoring agent to select useful learning actions from a student's notes and quiz performance. It can create a quiz, explain a missed concept, work through an example, simplify an explanation, ask a clarification question, or recommend finishing. Feedback includes new explanations and relevant background information rather than only repeating source notes. The current default model is GPT-OSS 20B through Groq; the earlier local version used Qwen through LM Studio.
 
 ## 2. Understanding of agentic AI
 
-An AI agent uses observations to choose actions towards a goal and inspects the results of those actions. In StudyBuddy, Qwen observes notes, actual selected answers, scores, previous teaching, and the latest tool result. It selects an allowed tool and arguments, including topics, difficulty, and recall or application questions. LangGraph executes the choice and returns the tool's result to the agent for its next decision.
+An AI agent uses observations to choose actions towards a goal and inspects the results of those actions. In StudyBuddy, the model observes notes, actual selected answers, scores, previous teaching, and the latest tool result. It selects an allowed tool and arguments, including topics, difficulty, and recall or application questions. LangGraph executes the choice and returns the tool's result to the agent for its next decision.
 
 LangGraph represents the workflow using shared state, nodes, and conditional edges. The state stores notes, quizzes, answers, scores, teaching cards, model-selected actions, and observations. Conditional edges dispatch the tool selected by the model. Interrupts pause for quiz answers, clarification, or permission to take another quiz. The score is an observation and a goal indicator, rather than a fixed rule selecting every next action.
 
@@ -50,7 +50,7 @@ Scope: one student session, short pasted notes, multiple-choice assessment, sour
 
 **Project title:** StudyBuddy — Adaptive AI Learning Assistant.
 
-The student provides notes and practice preferences. Qwen selects a quiz or asks a clarification question if the notes lack useful context. After deterministic scoring, the model chooses an explanation, a worked example, or a simpler explanation for missed concepts. Each concept receives a fresh explanation, an example, extra insight, and a self-check question. After observing the teaching result, the agent can recommend another quiz with selected difficulty and question style, or recommend finishing. The student can accept or end further practice.
+The student provides notes and practice preferences. The model selects a quiz or asks a clarification question if the notes lack useful context. After deterministic scoring, the model chooses an explanation, a worked example, or a simpler explanation for missed concepts. Each concept receives a fresh explanation, an example, extra insight, and a self-check question. After observing the teaching result, the agent can recommend another quiz with selected difficulty and question style, or recommend finishing. The student can accept or end further practice.
 
 ### Agent and tool roles
 
@@ -71,12 +71,12 @@ The complete graph appears in the README and in `docs/diagrams/workflow.mmd`. Th
 | Required field | Implementation |
 |---|---|
 | Programming language | Python 3.12 |
-| LLM / AI model | Qwen 2.5 7B Instruct served by LM Studio; exact model ID tested: `qwen2.5-7b-instruct` |
+| LLM / AI model | GPT-OSS 20B via Groq (`openai/gpt-oss-20b`); optional original local model: Qwen 2.5 7B Instruct via LM Studio |
 | Agent framework | LangGraph 1.2.16 |
-| Tools / APIs | LM Studio OpenAI-compatible HTTP API; schema-constrained tool-selection protocol; teaching and quiz tools; deterministic retrieval, validation, and scoring; Pydantic schemas |
+| Tools / APIs | Groq OpenAI-compatible HTTP API; JSON Schema tool-selection protocol; teaching and quiz tools; deterministic retrieval, validation, and scoring; Pydantic schemas |
 | Database / storage | In-memory LangGraph checkpointer and Streamlit session state; downloadable Markdown and JSON evidence; no database |
 | Frontend | Streamlit 1.66.0 |
-| Backend | Python functions in the Streamlit process and the local LM Studio inference server |
+| Backend | Python functions in the Streamlit process with Groq-hosted inference |
 
 ### Implementation steps
 
@@ -100,7 +100,7 @@ Teaching can use established background knowledge beyond the notes and is labell
 
 See `docs/testing-evidence.md` for the matrix and actual evidence files. Tests verify that different model-selected teaching tools execute at the same score, agent-selected difficulty reaches quiz generation, an agent can offer more practice after a perfect score, and an agent can finish below the goal without inventing mastery. Other tests cover feedback for missed concepts at the target boundary, copied-note rejection, clarification, invalid actions, saved results after failure, scoring, bounds, and the interface journey.
 
-The live verification script calls Qwen for action selection, quiz generation, and expanded teaching. It deliberately submits wrong answers to exercise feedback and accepts any model-recommended follow-up quiz with scripted correct answers. Actual actions, observations, and teaching content are saved. This checks software behaviour; it does not demonstrate learning improvement or independently establish factual correctness.
+The live verification script calls the configured model for action selection, quiz generation, and expanded teaching. It deliberately submits wrong answers to exercise feedback and accepts any model-recommended follow-up quiz with scripted correct answers. Actual actions, observations, and teaching content are saved. Existing saved live results are from the earlier Qwen version; Groq needs a separate real-key verification before claiming it works. This checks software behaviour; it does not demonstrate learning improvement or independently establish factual correctness.
 
 ## 8. Final project demonstration
 

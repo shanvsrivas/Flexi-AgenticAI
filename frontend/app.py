@@ -15,7 +15,7 @@ if BACKEND_ROOT not in sys.path:
 
 from studybuddy.export import markdown_report
 from studybuddy.graph import build_graph, continue_session, start_session, submit_answers, submit_clarification
-from studybuddy.llm import LocalTutor, ModelError
+from studybuddy.llm import create_tutor, ModelError
 from studybuddy.sample import SAMPLE_NOTES, SampleTutor
 
 st.set_page_config(page_title="StudyBuddy · Learn with a little direction", page_icon="🌱", layout="wide", initial_sidebar_state="auto")
@@ -58,7 +58,11 @@ if sample_mode:
 
 
 def launch(notes):
-    tutor = SampleTutor() if sample_mode else LocalTutor()
+    try:
+        settings = dict(st.secrets) if not sample_mode else {}
+    except FileNotFoundError:
+        settings = {}
+    tutor = SampleTutor() if sample_mode else create_tutor(settings)
     if sample_mode:
         notes = SAMPLE_NOTES
     graph = build_graph(tutor)
@@ -85,8 +89,8 @@ if not active:
         if start_col.button("Start learning →", type="primary", width='stretch'):
             try:
                 launch(notes)
-            except ModelError:
-                st.error("Your tutor is temporarily unavailable. Please try again shortly.")
+            except ModelError as exc:
+                st.error(str(exc))
             except ValueError as exc:
                 st.error(str(exc))
         if not sample_mode:
@@ -107,7 +111,7 @@ else:
     if state.get("status") == "error" and not state.get("history"):
         st.title("Let's try that again.")
         if state.get("model_error"):
-            st.error("Your tutor is temporarily unavailable. Please try a new session shortly.")
+            st.error(state["model_error"])
         else:
             st.error("We couldn't prepare a suitable quiz. Start a new session with a shorter section of notes.")
         with st.expander("More details"):
@@ -133,6 +137,8 @@ else:
             st.caption("You're practising with preset example notes and questions.")
         if state.get("status") == "error":
             st.warning("Your answers are saved, but your tutor couldn't finish the feedback. You can download your summary or start a new session.")
+            if "free usage limit" in state.get("model_error", ""):
+                st.info(state["model_error"])
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Practice round", f"{state['round']} / 3")
         m2.metric("Latest score", f"{state['history'][-1]['score']:g}%" if state.get("history") else "—")

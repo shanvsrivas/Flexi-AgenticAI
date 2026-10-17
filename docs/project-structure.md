@@ -12,7 +12,7 @@ AgenticAI/
 │   │   ├── __init__.py
 │   │   ├── graph.py                   LangGraph state and workflow
 │   │   ├── agent.py                   Tool catalogue and action rules
-│   │   ├── llm.py                     LM Studio model connection
+│   │   ├── llm.py                     Groq and optional LM Studio connections
 │   │   ├── models.py                  Structured output validation
 │   │   ├── tools.py                   Retrieval, checking, and scoring
 │   │   ├── sample.py                  Offline demo fixtures
@@ -72,7 +72,7 @@ The supplied screenshots are reference material and completion evidence. The dup
 
 ## How the layers connect
 
-The Streamlit frontend calls backend functions directly. The backend runs the LangGraph workflow and sends inference requests to LM Studio. The folder separation makes these responsibilities easier to inspect and explain without adding a second application server.
+The Streamlit frontend calls backend functions directly. The backend runs the LangGraph workflow and sends inference requests to Groq by default, or LM Studio when explicitly configured. The folder separation makes these responsibilities easier to inspect and explain without adding a second application server.
 
 Run everything from `AgenticAI` with `run.ps1`. Run all tests from the same folder:
 

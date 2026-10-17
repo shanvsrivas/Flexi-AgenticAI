@@ -67,4 +67,4 @@ Before presenting, manually read each generated question and answer key. Add scr
 .\.venv\Scripts\python.exe scripts/live_smoke.py
 ```
 
-The second command requires a running LM Studio server and the specified model. It replaces the saved live verification files with the new actual run.
+The second command uses the configured provider: Groq by default, or LM Studio when explicitly selected. It needs a real connection and replaces the saved live verification files with the new actual run. The earlier Qwen artifacts are historical evidence and do not establish that Groq inference has passed. The separate `artifacts/test-results/groq-tests.xml` records 58 passing automated tests, including credential handling, the Groq protocol, and safe rate-limit errors; those provider tests use mocks.

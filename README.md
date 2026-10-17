@@ -1,6 +1,6 @@
 # StudyBuddy
 
-A small adaptive learning assistant built with **Python, LangGraph, Streamlit, and Qwen 2.5 7B Instruct served by LM Studio**. The tutor selects teaching tools from observed performance, explains missed concepts with fresh examples and extra background, and chooses the next useful practice activity.
+A small adaptive learning assistant built with **Python, LangGraph, Streamlit, and GPT-OSS 20B served by Groq**. The tutor selects teaching tools from observed performance, explains missed concepts with fresh examples and extra background, and chooses the next useful practice activity. The original local Qwen 2.5 7B Instruct setup remains available through explicit server configuration.
 
 Repository: [shanvsrivas/Flexi-AgenticAI](https://github.com/shanvsrivas/Flexi-AgenticAI).
 
@@ -28,16 +28,38 @@ python -m pip --python .venv\Scripts\python.exe install -r requirements-dev.txt
 
 On another computer, clone the repository and run these commands from its root folder. Original course certificates and classroom requirement screenshots are retained in the local submission copy and excluded from Git.
 
-## Connect LM Studio
+## Connect the tutor
+
+The default provider is **Groq**, using `openai/gpt-oss-20b`. Copy
+`.streamlit/secrets.toml.example` to `.streamlit/secrets.toml` and replace the
+placeholder with your private Groq API key. Streamlit reads this file locally;
+on Community Cloud, enter the same settings in the app's **Secrets** settings.
+Never commit the real key. End users do not need their own API key.
+
+Groq runs inference on its servers, so the hosted app works while your laptop is
+off. Its free plan has shared request/token limits; this is intended for a small
+demonstration, not unlimited simultaneous use. A limit error does not switch to
+another model or to the fixed example session. Notes and answers used for live
+tutoring are sent to Groq.
+
+For the original local setup, explicitly set `STUDYBUDDY_PROVIDER = "lmstudio"`
+in Streamlit secrets or the process environment:
 
 1. Load **Qwen 2.5 7B Instruct** with model ID `qwen2.5-7b-instruct`.
 2. Start the API server in LM Studio's **Developer** tab.
 3. StudyBuddy connects automatically to `http://localhost:1234/v1`; users do not configure a connection or choose a model.
 4. Paste notes, or click **Load example notes**, then **Start learning**.
 
-The app uses LM Studio's OpenAI-compatible API to run Qwen locally. **Qwen 2.5 7B Instruct is the only supported inference model**, with no automatic fallback to other models. For deployment, the server can point to a hosted OpenAI-compatible inference endpoint serving the same Qwen model ID.
+The optional LM Studio adapter uses Qwen locally with the fixed identifier
+`qwen2.5-7b-instruct`. Groq uses the fixed identifier `openai/gpt-oss-20b`.
+There is no model picker or automatic provider fallback.
 
-Server-side environment variables: `LMSTUDIO_BASE_URL`, `LMSTUDIO_API_KEY`, and `LMSTUDIO_TIMEOUT` (30–600 seconds; default 180). See `.env.example`. These are read from the process environment; the app does not automatically load `.env` files. Credentials stay on the server and are excluded from exports. There is no model environment variable or user-facing connection panel.
+Server-side settings: `STUDYBUDDY_PROVIDER` (default `groq`), `GROQ_API_KEY`,
+and optionally `LMSTUDIO_BASE_URL`, `LMSTUDIO_API_KEY`, `LMSTUDIO_TIMEOUT`
+(30–600 seconds; default 180). See `.env.example`. The app reads Streamlit
+secrets or environment variables; it does not automatically load `.env` files.
+Credentials stay on the server and are excluded from exports. There is no
+user-facing connection panel.
 
 ## What is implemented
 
@@ -60,7 +82,7 @@ The interface focuses on learning, with connection settings and graph internals 
 
 ```mermaid
 flowchart TD
-    A[Prepare notes] --> B[Qwen observes state and selects an allowed tool]
+    A[Prepare notes] --> B[Tutor observes state and selects an allowed tool]
     B --> C[Create and validate quiz]
     C --> D[Pause for student answers]
     D --> E[Score using answer key]
@@ -75,7 +97,7 @@ flowchart TD
     C -->|Invalid: one repair attempt| B
 ```
 
-There is **one tutoring agent**. Qwen returns a structured tool selection, arguments, and a short action justification. LangGraph validates that selection, dispatches the tool, records its result, and returns control to Qwen. This is model-directed action selection rather than a fixed score-to-revision route. The protocol uses schema-constrained JSON rather than the provider's native `tool_calls` format. Scoring and policy checks remain deterministic. There is no vector database or web search.
+There is **one tutoring agent**. The model returns a structured tool selection, arguments, and a short action justification. LangGraph validates that selection, dispatches the tool, records its result, and returns control to the model. This is model-directed action selection rather than a fixed score-to-revision route. The protocol uses schema-constrained JSON rather than the provider's native `tool_calls` format. Scoring and policy checks remain deterministic. There is no vector database or web search.
 
 Extra explanations can include established model knowledge beyond the supplied notes. The interface labels that background separately; it is not presented as a verified source quotation. Assessment questions remain restricted to the notes. Additional explanations can still contain errors and require review.
 
@@ -86,7 +108,7 @@ Extra explanations can include established model knowledge beyond the supplied n
 .\.venv\Scripts\python.exe scripts/live_smoke.py
 ```
 
-Tests cover model-selected tools at the same score, adaptive difficulty, completion choices, clarification, generated teaching, policy enforcement, scoring, isolation, bounded retries, exports, and a complete interface session. The live smoke test calls Qwen and saves its actual decisions and teaching under `artifacts/live-verification/`. Scripted answers exercise the workflow; its scores are software verification, not evidence of learning improvement.
+Tests cover model-selected tools at the same score, adaptive difficulty, completion choices, clarification, generated teaching, policy enforcement, scoring, isolation, bounded retries, exports, Groq protocol/error handling, and a complete interface session. The live smoke test calls the configured model and saves its actual decisions and teaching under `artifacts/live-verification/`. Existing Qwen evidence records the original local implementation; it does not prove Groq inference. Scripted answers exercise the workflow; its scores are software verification, not evidence of learning improvement.
 
 ## Project files
 
@@ -129,7 +151,7 @@ For the viva, [the agent workflow guide](docs/agent-workflow.md) explains precis
 | `frontend/assets/styles.css` | Interface styling |
 | `backend/studybuddy/graph.py` | LangGraph nodes, state, conditional routes, interrupts |
 | `backend/studybuddy/agent.py` | Tool catalogue, decision context, and executable-action rules |
-| `backend/studybuddy/llm.py` | Local LM Studio API adapter and tutoring prompt |
+| `backend/studybuddy/llm.py` | Groq/local API adapters and tutoring prompts |
 | `backend/studybuddy/models.py` | Generated lesson/question schemas |
 | `backend/studybuddy/tools.py` | Source preparation, retrieval, validation, scoring |
 | `backend/studybuddy/sample.py` | Labelled offline fixtures |
@@ -147,7 +169,10 @@ For the viva, [the agent workflow guide](docs/agent-workflow.md) explains precis
 - Checkpoints are stored in memory. Restarting the app loses them; browser reloads may start a new Streamlit session. Download evidence to retain it.
 - Exact and closely reworded questions are rejected in live mode using text similarity, but semantically similar questions can still occur. Sample follow-ups use a second fixed question bank and may repeat in round three.
 - Local generation speed depends on your hardware, quantisation, and model context settings. Start with three questions if the 7B model is slow.
-- Deployment is a separate next step. A hosted web app cannot call a visitor's `localhost` LM Studio server directly; the hosting server will need access to a Qwen 2.5 7B inference endpoint.
+- Community Cloud can sleep when inactive, and Groq free-tier limits are shared across visitors. The URL remains usable while the app/account is retained, subject to provider availability. Ongoing sessions are lost on restarts.
+
+For the container, runtime settings, and checks needed to publish the existing
+application, see [the cloud deployment guide](deploy/README.md).
 
 ## References
 
@@ -155,5 +180,7 @@ For the viva, [the agent workflow guide](docs/agent-workflow.md) explains precis
 - [LangGraph interrupts and checkpointing](https://docs.langchain.com/oss/python/langgraph/interrupts)
 - [LM Studio local server](https://lmstudio.ai/docs/developer/core/server)
 - [LM Studio structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output)
+- [Groq structured output](https://console.groq.com/docs/structured-outputs)
+- [Groq rate limits](https://console.groq.com/docs/rate-limits)
 
 The implementation was created for this project with AI coding assistance. These documentation references informed its API usage; no external application repository was copied into this project.

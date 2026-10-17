@@ -1,4 +1,4 @@
-"""A minimal OpenAI-compatible client for the user's local LM Studio server."""
+"""Structured tutoring through Groq, with an optional local LM Studio adapter."""
 
 import json
 import os
@@ -10,6 +10,7 @@ import requests
 from .models import AgentDecision, DraftLesson, TeachingResponse
 
 QWEN_MODEL = "qwen2.5-7b-instruct"
+GROQ_MODEL = "openai/gpt-oss-20b"
 
 
 class ModelError(RuntimeError):
@@ -28,7 +29,7 @@ class LocalTutor:
 
     def __init__(self, base_url=None, model=QWEN_MODEL, api_key=None, timeout=None):
         if model != QWEN_MODEL:
-            raise ValueError("StudyBuddy uses Qwen 2.5 7B Instruct only.")
+            raise ValueError("The local adapter uses Qwen 2.5 7B Instruct only.")
         self.base_url = validate_base_url(base_url or os.getenv("LMSTUDIO_BASE_URL", "http://localhost:1234/v1"))
         self.model = QWEN_MODEL
         self.api_key = api_key if api_key is not None else os.getenv("LMSTUDIO_API_KEY", "")
@@ -65,12 +66,15 @@ class LocalTutor:
         return models
 
     def _structured(self, system, data, schema, name, max_tokens):
-        payload = self._request("POST", "/chat/completions", json={
+        body = {
             "model": self.model,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": json.dumps(data, ensure_ascii=False)}],
             "temperature": 0.2, "max_tokens": max_tokens, "stream": False,
             "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema if isinstance(schema, dict) else schema.model_json_schema()}},
-        })
+        }
+        if self.model == GROQ_MODEL:
+            body.update(reasoning_effort="low", max_tokens=max_tokens + 1000)
+        payload = self._request("POST", "/chat/completions", json=body)
         try:
             choice = payload["choices"][0]
             if choice.get("finish_reason") == "length":
@@ -140,7 +144,7 @@ class LocalTutor:
                 "specific observations, or short examples. A new scenario is required, not a reworded previous question. "
                 "Keep the correct answer justified by the supplied notes."
             )
-        user = json.dumps({
+        user = {
             "task": f"Create exactly {count} multiple-choice questions and a brief lesson.",
             "difficulty": difficulty,
             "question_style": question_style,
@@ -149,29 +153,65 @@ class LocalTutor:
             "previous_questions": previous_questions,
             "validation_feedback": feedback,
             "sources": chunks,
-        }, ensure_ascii=False)
-        payload = self._request("POST", "/chat/completions", json={
-            "model": self.model,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-            "temperature": 0.2,
-            "max_tokens": 3200,
-            "stream": False,
-            "response_format": {"type": "json_schema", "json_schema": {"name": "study_lesson", "strict": True, "schema": DraftLesson.model_json_schema()}},
-        })
+        }
+        draft = self._structured(system, user, DraftLesson, "study_lesson", 3200)
+        # The model chooses a source. The app, not the model, copies its text.
+        sources = {chunk["id"]: chunk["text"] for chunk in chunks}
+        if isinstance(draft, dict) and isinstance(draft.get("questions"), list):
+            for question in draft["questions"]:
+                if isinstance(question, dict):
+                    question["evidence"] = sources.get(question.get("source_id"), "")
+        return draft
+
+
+class GroqTutor(LocalTutor):
+    """Use a fixed hosted model; credentials are supplied only by the server."""
+
+    def __init__(self, api_key=None, timeout=90):
+        key = api_key if api_key is not None else os.getenv("GROQ_API_KEY", "")
+        if not isinstance(key, str) or not key.strip():
+            raise ModelError("The tutor has not been connected yet. Please contact the app owner.")
+        super().__init__(base_url="https://api.groq.com/openai/v1", api_key=key.strip(), timeout=timeout)
+        self.model = GROQ_MODEL
+
+    def _request(self, method, path, **kwargs):
         try:
-            choice = payload["choices"][0]
-            if choice.get("finish_reason") == "length":
-                raise ModelError("The model ran out of output space. Try three questions or shorter notes.")
-            content = choice["message"]["content"]
-            content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip())
-            draft = json.loads(content)
-            # The model chooses a source. The app, not the model, copies its text.
-            sources = {chunk["id"]: chunk["text"] for chunk in chunks}
-            if isinstance(draft, dict) and isinstance(draft.get("questions"), list):
-                for question in draft["questions"]:
-                    if isinstance(question, dict):
-                        question["evidence"] = sources.get(question.get("source_id"), "")
-            return draft
-        except (KeyError, IndexError, TypeError, ValueError, AttributeError):
-            # The graph can ask for one repaired generation rather than display broken output.
-            return {"invalid_output": "The model did not return a complete JSON lesson."}
+            response = requests.request(
+                method, self.base_url + path,
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"},
+                timeout=(5, self.timeout), **kwargs,
+            )
+        except requests.Timeout:
+            raise ModelError("The tutor took too long to respond. Please try again shortly.") from None
+        except requests.RequestException:
+            raise ModelError("The tutor could not connect. Please try again shortly.") from None
+        if not response.ok:
+            if response.status_code == 429:
+                raise ModelError("The tutor has reached its shared free usage limit. Please wait a minute and try again; daily limits reset later.")
+            hints = {
+                400: "The tutor could not process this request. Try shorter notes.",
+                401: "The tutor's connection needs attention from the app owner.",
+                403: "The tutor's connection needs attention from the app owner.",
+                404: "The tutor's model is currently unavailable.",
+                413: "These notes are too long for the tutor's free allowance. Try a shorter section.",
+            }
+            raise ModelError(hints.get(response.status_code, "The tutor is temporarily unavailable. Please try again shortly."))
+        try:
+            return response.json()
+        except ValueError:
+            raise ModelError("The tutor returned an unreadable response. Please try again.") from None
+
+
+def create_tutor(settings=None):
+    """Select the server-configured provider, never a fallback after an error."""
+    settings = settings or {}
+    provider = str(settings.get("STUDYBUDDY_PROVIDER", os.getenv("STUDYBUDDY_PROVIDER", "groq"))).lower()
+    if provider == "groq":
+        return GroqTutor(api_key=settings.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY", "")))
+    if provider == "lmstudio":
+        return LocalTutor(
+            base_url=settings.get("LMSTUDIO_BASE_URL"),
+            api_key=settings.get("LMSTUDIO_API_KEY"),
+            timeout=settings.get("LMSTUDIO_TIMEOUT"),
+        )
+    raise ValueError("The server's tutor provider setting is invalid.")

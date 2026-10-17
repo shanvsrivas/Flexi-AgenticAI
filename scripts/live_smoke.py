@@ -1,4 +1,4 @@
-"""Exercise a real local model and save honest live evidence. No API keys logged."""
+"""Exercise the configured live tutor and save evidence without API keys."""
 
 import argparse
 from pathlib import Path
@@ -10,13 +10,14 @@ from studybuddy.export import json_report, markdown_report
 from studybuddy.graph import build_graph, continue_session, start_session, submit_answers
 from studybuddy.llm import LocalTutor
 from studybuddy.sample import SAMPLE_NOTES
+from check_model import configured_tutor
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default=None)
     args = parser.parse_args()
-    tutor = LocalTutor(base_url=args.base_url, timeout=300)
+    tutor = LocalTutor(base_url=args.base_url, timeout=300) if args.base_url else configured_tutor()
     graph = build_graph(tutor)
     state = start_session(graph, SAMPLE_NOTES, thread_id="live-verification", count=3)
     print("Initial generation:", state.get("status"), state.get("validation_errors"), flush=True)

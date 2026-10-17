@@ -3,7 +3,7 @@
 ## A three-to-five-minute demonstration
 
 1. **Problem, 20 seconds.** Explain that students need to identify weak concepts rather than only reread notes.
-2. **Setup, 20 seconds.** Choose My notes. Explain that Qwen 2.5 7B Instruct runs through a server-configured connection; users do not select models or enter connection details.
+2. **Setup, 20 seconds.** Choose My notes. Explain that GPT-OSS 20B runs on Groq through a server-configured connection; users do not select models or enter connection details. The original local implementation used Qwen 2.5 7B Instruct through LM Studio.
 3. **Notes and generation, 30–60 seconds.** Load example notes or paste short notes. Select three questions for a faster live generation. Build the session. Read the guide and show the quiz.
 4. **Feedback, 30–60 seconds.** Submit answers and show a missed concept's explanation, worked example, extra insight, and self-check. Expand the original notes to show that they are separate. If using deliberate mistakes, identify them as test inputs. Even a passing score receives feedback for individual mistakes.
 5. **Agent decision, 30–60 seconds.** Explain which teaching method the agent selected and its recommended next difficulty/style. If it offers another quiz, accept it. The agent may recommend finishing instead; show that choice honestly rather than claiming a fixed route.
@@ -28,7 +28,7 @@ The shared data passed between nodes: notes, source sections, generated lesson, 
 
 **What is a conditional edge?**
 
-It chooses the next node from state. `route_action` dispatches the tool selected by Qwen. For example, worked_example executes teaching; ask_clarification pauses for context; finish ends the session. Validation and session limits remain rules in Python.
+It chooses the next node from state. `route_action` dispatches the tool selected by the model. For example, worked_example executes teaching; ask_clarification pauses for context; finish ends the session. Validation and session limits remain rules in Python.
 
 **How does the graph wait for me?**
 
@@ -50,7 +50,7 @@ Extra teaching can include relevant background beyond the notes and is labelled 
 
 **How is this different from a fixed workflow?**
 
-A fixed score rule would always select the same next action for a given score. Here Qwen receives actual answers, previous teaching, and tool observations, then chooses the next tool and its arguments. It can choose a simpler explanation or an application example at the same score, alter the next quiz's difficulty, or offer further practice after reaching the target. Python checks that the selected action is permitted.
+A fixed score rule would always select the same next action for a given score. Here the model receives actual answers, previous teaching, and tool observations, then chooses the next tool and its arguments. It can choose a simpler explanation or an application example at the same score, alter the next quiz's difficulty, or offer further practice after reaching the target. Python checks that the selected action is permitted.
 
 **Does the model use native function calling?**
 

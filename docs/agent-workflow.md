@@ -1,12 +1,12 @@
 # How StudyBuddy uses an AI agent
 
-StudyBuddy gives Qwen 2.5 7B Instruct control over a bounded set of teaching actions. The graph does not automatically map every score to the same next action.
+StudyBuddy gives its language model control over a bounded set of teaching actions. The default is GPT-OSS 20B through Groq; the original local Qwen adapter is optional. The graph does not automatically map every score to the same next action.
 
 1. Prepare notes and provide the available tools and current session state.
-2. Qwen selects one tool, its arguments, and a brief action justification.
+2. The model selects one tool, its arguments, and a brief action justification.
 3. Python validates that the tool and arguments are allowed at this stage.
 4. LangGraph executes the selection and records its result as an observation.
-5. Qwen observes that result and selects the next useful action.
+5. The model observes that result and selects the next useful action.
 6. Pause whenever the student must answer a quiz, provide clarification, or agree to another quiz.
 
 ## What the model controls
@@ -41,4 +41,4 @@ The model returns schema-constrained JSON describing a tool selection. A graph d
 
 Inspect `backend/studybuddy/agent.py` for the catalogue and policies, `llm.py` for decision and teaching prompts, and `graph.py` for execution. Actual action names, arguments, brief justifications, tool observations, and expanded explanations are saved in `artifacts/live-verification/session.json`.
 
-Example mode uses fixed authored fixtures for both decisions and content; it demonstrates the executor but not live model autonomy. Use My notes with the Qwen server running to demonstrate the real agent.
+Example mode uses fixed authored fixtures for both decisions and content; it demonstrates the executor but not live model autonomy. Use My notes with a configured Groq key (or the optional local Qwen server) to demonstrate the real agent.
