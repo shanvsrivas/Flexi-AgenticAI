@@ -4,7 +4,7 @@ import pytest
 
 from studybuddy.agent import available_tools
 from studybuddy.export import json_report, markdown_report
-from studybuddy.graph import build_graph, continue_session, start_session, submit_answers, submit_clarification
+from studybuddy.graph import build_graph, continue_session, retry_tutor, start_session, submit_answers, submit_clarification
 from studybuddy.llm import ModelError
 from studybuddy.sample import SAMPLE_NOTES, SampleTutor
 
@@ -17,6 +17,48 @@ def setup(tutor, count=3):
 
 def wrong_answers(state):
     return [(q["correct_index"] + 1) % 4 for q in state["lesson"]["questions"]]
+
+
+def test_connection_retry_keeps_scored_answers_and_recovers_teaching():
+    class TransientTutor(SampleTutor):
+        unavailable = True
+
+        def teach(self, **kwargs):
+            if self.unavailable:
+                raise ModelError("The tutor has reached its shared free usage limit.")
+            return super().teach(**kwargs)
+
+    tutor = TransientTutor()
+    graph, state = setup(tutor)
+    answers = wrong_answers(state)
+    failed = submit_answers(graph, "agent-test", answers)
+    assert failed["status"] == "error" and len(failed["history"]) == 1
+    tutor.unavailable = False
+    recovered = retry_tutor(graph, "agent-test")
+    assert recovered["status"] == "revision"
+    assert recovered["round"] == 1 and recovered["answers"] == answers
+    assert recovered["history"] == failed["history"]
+    assert len(recovered["revision"]) == 3
+    assert graph.get_state({"configurable": {"thread_id": "agent-test"}}).next == ("await_revision",)
+
+
+def test_connection_retry_recovers_initial_quiz_but_rejects_an_active_quiz():
+    class TransientTutor(SampleTutor):
+        unavailable = True
+
+        def generate(self, **kwargs):
+            if self.unavailable:
+                raise ModelError("The tutor could not connect.")
+            return super().generate(**kwargs)
+
+    tutor = TransientTutor()
+    graph, state = setup(tutor)
+    assert state["status"] == "error" and not state["history"]
+    tutor.unavailable = False
+    recovered = retry_tutor(graph, "agent-test")
+    assert recovered["lesson"] and not recovered["history"]
+    with pytest.raises(ValueError, match="no stopped tutor request"):
+        retry_tutor(graph, "agent-test")
 
 
 class ChoosingTutor(SampleTutor):

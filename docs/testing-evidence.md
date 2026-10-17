@@ -2,7 +2,7 @@
 
 ## Recorded verification
 
-- **Current combined suite: 61 tests passed**, including Groq credentials/protocol, provider-side schema repair, short rate-limit retries, and the complete Streamlit interface journey. Result: `artifacts/test-results/groq-tests.xml`. The earlier 48-test result remains in `artifacts/test-results/test-results.xml`.
+- **Current combined suite: 63 tests passed**, including Groq credentials/protocol, provider-side schema repair, short rate-limit retries, saved-session recovery without duplicate scoring, and the complete Streamlit interface journey. Result: `artifacts/test-results/groq-tests.xml`. The earlier 48-test result remains in `artifacts/test-results/test-results.xml`.
 - **Live Groq flow passed** with `openai/gpt-oss-20b`: quiz, scripted wrong answers (0%), three generated teaching cards, focused follow-up quiz, scripted correct answers (100%), and `finish`. Final status: `mastered`. Evidence: `artifacts/groq-live-verification/session.json` and `session.md`. Short free-tier token limits occurred and were handled by a bounded wait/retry. This verifies live inference locally; public hosting must be checked separately.
 - The original local Qwen run is retained in `artifacts/live-verification/session.json` and `session.md`; it is separate from the current Groq evidence.
 - Live answers are scripted to exercise decisions, not to represent a student. The agent can offer more practice after reaching the goal or recommend finishing below it; the script records those choices honestly.

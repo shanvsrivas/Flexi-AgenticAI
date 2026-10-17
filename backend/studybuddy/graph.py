@@ -268,6 +268,22 @@ def continue_session(graph, thread_id, decision="retry"):
     return graph.invoke(Command(resume=decision), config=config)
 
 
+def retry_tutor(graph, thread_id):
+    """Retry a stopped model request without grading or discarding answers."""
+    config = graph_config(thread_id)
+    snapshot = graph.get_state(config)
+    state = snapshot.values
+    if snapshot.next or state.get("status") != "error" or not state.get("model_error"):
+        raise ValueError("This session has no stopped tutor request to retry.")
+    if state.get("agent_steps", 0) >= 24:
+        raise ValueError("The tutor reached its action limit. Please start a new session.")
+    return graph.invoke(Command(
+        goto="select_action",
+        update={"model_error": "", "validation_errors": [], "attempts": 0,
+                "status": "reviewing" if state.get("history") else "generating"},
+    ), config=config)
+
+
 def validate_clarification(answer):
     if not isinstance(answer, str) or not 3 <= len(answer.strip()) <= 1000:
         raise ValueError("Please add a little more detail, using 3 to 1,000 characters.")

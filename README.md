@@ -4,6 +4,8 @@ A small adaptive learning assistant built with **Python, LangGraph, Streamlit, a
 
 Repository: [shanvsrivas/Flexi-AgenticAI](https://github.com/shanvsrivas/Flexi-AgenticAI).
 
+Public prototype: [Open StudyBuddy](https://flexi-agenticai-v5z2sxuprwkupywyvkepc9.streamlit.app/).
+
 ## Run on this computer
 
 Dependencies have been installed in the project-local `.venv`.
@@ -74,6 +76,7 @@ user-facing connection panel.
 - Model-selected teaching strategy, quiz difficulty, and recall/application question style. The agent can offer a challenge after reaching the score goal or recommend stopping below it without inventing a passing result.
 - Code-enforced limits: feedback for every missed concept, at most three quizzes, two clarifications, 24 agent decisions, and bounded output-repair attempts.
 - Answer review, progress history, and a downloadable study summary. Technical traces and full Markdown/JSON evidence remain available through the live verification script and saved artifacts.
+- Short free-tier rate limits are retried with a bounded wait. If a request still stops, **Try tutor again** resumes the saved session without grading answers twice or discarding progress.
 - A clearly labelled sample mode with fixed authored notes/questions. It runs the same graph without calling an LLM and does not accept arbitrary notes.
 
 The interface focuses on learning, with connection settings and graph internals kept out of the study screens. Use **Try an example** to explore a preset lesson without connecting a model; this is fixed demonstration content rather than a second inference model.

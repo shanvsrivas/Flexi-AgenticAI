@@ -14,7 +14,7 @@ if BACKEND_ROOT not in sys.path:
     sys.path.insert(0, BACKEND_ROOT)
 
 from studybuddy.export import markdown_report
-from studybuddy.graph import build_graph, continue_session, start_session, submit_answers, submit_clarification
+from studybuddy.graph import build_graph, continue_session, retry_tutor, start_session, submit_answers, submit_clarification
 from studybuddy.llm import create_tutor, ModelError
 from studybuddy.sample import SAMPLE_NOTES, SampleTutor
 
@@ -234,5 +234,15 @@ else:
             st.caption("Save your answers and revision notes for later.")
             export_args = {"mode": st.session_state["active_mode"], "model": st.session_state["active_model"]}
             st.download_button("↓ Download study summary", markdown_report(state, **export_args, technical_details=False), file_name="studybuddy-summary.md", mime="text/markdown", disabled=not history, width='stretch')
+
+if active and state.get("status") == "error" and state.get("model_error") and state.get("agent_steps", 0) < 24:
+    st.caption("Your answers and progress will be kept when you retry.")
+    if st.button("Try tutor again", type="primary"):
+        try:
+            with st.spinner("Reconnecting with your tutor…"):
+                st.session_state["state"] = retry_tutor(graph, thread_id)
+            st.rerun()
+        except ValueError as exc:
+            st.error(str(exc))
 
 st.markdown('<div class="footer">StudyBuddy · A little practice, every day.</div>', unsafe_allow_html=True)

@@ -104,7 +104,7 @@ def test_groq_waits_once_for_short_rate_limit(monkeypatch):
     monkeypatch.setattr("studybuddy.llm.requests.request", request)
     monkeypatch.setattr("studybuddy.llm.time.sleep", sleeps.append)
     assert GroqTutor(api_key="test").list_models() == [GROQ_MODEL]
-    assert len(attempts) == 2 and sleeps == [2.5]
+    assert len(attempts) == 2 and sleeps == [3.5]
 
 
 def test_groq_does_not_wait_for_daily_limit(monkeypatch):

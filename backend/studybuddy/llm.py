@@ -181,21 +181,25 @@ class GroqTutor(LocalTutor):
 
     def _request(self, method, path, **kwargs):
         try:
-            for attempt in range(2):
+            waited = 0
+            for attempt in range(3):
                 response = requests.request(
                     method, self.base_url + path,
                     headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"},
                     timeout=(5, self.timeout), **kwargs,
                 )
-                if response.ok or response.status_code != 429 or attempt:
+                if response.ok or response.status_code != 429 or attempt == 2:
                     break
                 try:
                     delay = float(response.headers.get("retry-after", "0"))
                 except (ValueError, TypeError):
                     delay = 0
-                if not 0 < delay <= 60:
+                if not 0 < delay <= 60 or waited + delay + 1 > 65:
                     break
-                time.sleep(delay)
+                # Leave a small refill margin instead of retrying at the exact
+                # limit boundary; all visitors share this server-side allowance.
+                time.sleep(delay + 1)
+                waited += delay + 1
         except requests.Timeout:
             raise ModelError("The tutor took too long to respond. Please try again shortly.") from None
         except requests.RequestException:
