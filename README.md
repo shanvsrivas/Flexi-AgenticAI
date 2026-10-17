@@ -58,7 +58,7 @@ There is no model picker or automatic provider fallback.
 
 Server-side settings: `STUDYBUDDY_PROVIDER` (default `groq`), `GROQ_API_KEY`,
 and optionally `LMSTUDIO_BASE_URL`, `LMSTUDIO_API_KEY`, `LMSTUDIO_TIMEOUT`
-(30–600 seconds; default 180). See `.env.example`. The app reads Streamlit
+(30–600 seconds; default 180). See `.streamlit/secrets.toml.example`. The app reads Streamlit
 secrets or environment variables; it does not automatically load `.env` files.
 Credentials stay on the server and are excluded from exports. There is no
 user-facing connection panel.

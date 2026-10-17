@@ -41,7 +41,6 @@ AgenticAI/
 ├── examples/ai-and-langgraph-notes.txt
 ├── scripts/live_smoke.py             Real-model verification command
 ├── .streamlit/config.toml            Shared theme and local server settings
-├── .gitignore
 ├── requirements.txt                  Application dependencies
 ├── requirements-dev.txt              Test dependencies
 ├── pytest.ini                        Test discovery and backend import path
