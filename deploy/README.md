@@ -1,5 +1,10 @@
 # Free demonstration deployment
 
+Public prototype: [StudyBuddy](https://flexi-agenticai-v5z2sxuprwkupywyvkepc9.streamlit.app/).
+Live quiz generation, scoring, extra teaching, and summary download were verified
+through an anonymous browser on 17 October 2026. A phone-sized view and an
+independent new session were also checked.
+
 Use **Streamlit Community Cloud** for the website and **Groq's Free plan** for
 the model. The deployed tutor uses **GPT-OSS 20B** (`openai/gpt-oss-20b`), which
 supports strict JSON Schema responses. LM Studio and a running laptop are not
@@ -36,6 +41,10 @@ Save and deploy. Community Cloud installs the root `requirements.txt` and
 provides an HTTPS `streamlit.app` link. Visitors use that link without an API
 key or a GitHub account when the app is public. All visitors share the hosting
 account's free allowance.
+
+After changes to backend imports, use the app's **Reboot app** menu if an import
+error appears after an automatic update. This clears Python modules cached by
+the running Streamlit process. Existing in-memory sessions are lost on a reboot.
 
 ## Verify before sharing
 

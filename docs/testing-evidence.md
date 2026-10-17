@@ -2,6 +2,8 @@
 
 ## Recorded verification
 
+- **Public deployment verified:** [StudyBuddy prototype](https://flexi-agenticai-v5z2sxuprwkupywyvkepc9.streamlit.app/). An anonymous browser completed live notes → quiz → scripted wrong answers → three extra concept explanations → summary download. A separate phone-sized browser loaded the public home with an independent empty session. Evidence: `artifacts/cloud-verification/verification.json` and `study-summary.md`. Verification date: 17 October 2026.
+
 - **Current combined suite: 63 tests passed**, including Groq credentials/protocol, provider-side schema repair, short rate-limit retries, saved-session recovery without duplicate scoring, and the complete Streamlit interface journey. Result: `artifacts/test-results/groq-tests.xml`. The earlier 48-test result remains in `artifacts/test-results/test-results.xml`.
 - **Live Groq flow passed** with `openai/gpt-oss-20b`: quiz, scripted wrong answers (0%), three generated teaching cards, focused follow-up quiz, scripted correct answers (100%), and `finish`. Final status: `mastered`. Evidence: `artifacts/groq-live-verification/session.json` and `session.md`. Short free-tier token limits occurred and were handled by a bounded wait/retry. This verifies live inference locally; public hosting must be checked separately.
 - The original local Qwen run is retained in `artifacts/live-verification/session.json` and `session.md`; it is separate from the current Groq evidence.

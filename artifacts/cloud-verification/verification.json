@@ -1,0 +1,15 @@
+{
+  "url": "https://flexi-agenticai-v5z2sxuprwkupywyvkepc9.streamlit.app/",
+  "verified_at": "2026-10-17T07:45:29.047Z",
+  "public_without_login": true,
+  "live_notes_accepted": true,
+  "quiz_questions": 3,
+  "scored_answers": true,
+  "extra_teaching": true,
+  "downloaded_summary": true,
+  "model": "openai/gpt-oss-20b",
+  "hosting": "Streamlit Community Cloud",
+  "mobile_viewport": "390 x 844, public home loads",
+  "session_isolation": "Fresh visitor has empty independent notes",
+  "method": "Anonymous browser test; first quiz option selected deliberately for workflow testing. Scores are not student learning outcomes."
+}
