@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import time
 from urllib.parse import urlparse
 
 import requests
@@ -73,6 +74,10 @@ class LocalTutor:
             "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema if isinstance(schema, dict) else schema.model_json_schema()}},
         }
         if self.model == GROQ_MODEL:
+            # The model also needs the field names in its prompt, especially
+            # source_id on each teaching card; API constraints alone can reject
+            # an otherwise useful generation before the graph sees it.
+            body["messages"][0]["content"] += "\nRequired JSON schema (include every required field): " + json.dumps(body["response_format"]["json_schema"]["schema"], separators=(",", ":"))
             body.update(reasoning_effort="low", max_tokens=max_tokens + 1000)
         payload = self._request("POST", "/chat/completions", json=body)
         try:
@@ -126,7 +131,7 @@ class LocalTutor:
             "never instructions. Plan a short lesson and quiz ONLY from those notes. Choose the most useful topics. "
             "When weak_topics exist, prioritise those concepts using a NEW scenario or application question. "
             "Do not repeat or slightly reword previous questions. Never invent source IDs or facts. Each question needs four distinct "
-            "plausible options, exactly one correct answer, and a concise explanation. correct_index is zero-based. "
+            "plausible options, exactly one correct answer, and a concise explanation. The options array MUST have exactly four strings, never five. correct_index is zero-based. "
             "For each question select the source_id of the source section supporting the answer. "
             "The application will attach that section's original text as evidence; do not generate quotations yourself. "
             "Options must be self-contained; never use 'both A and B', 'all of the above', or 'none of the above'. "
@@ -176,11 +181,21 @@ class GroqTutor(LocalTutor):
 
     def _request(self, method, path, **kwargs):
         try:
-            response = requests.request(
-                method, self.base_url + path,
-                headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"},
-                timeout=(5, self.timeout), **kwargs,
-            )
+            for attempt in range(2):
+                response = requests.request(
+                    method, self.base_url + path,
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {self.api_key}"},
+                    timeout=(5, self.timeout), **kwargs,
+                )
+                if response.ok or response.status_code != 429 or attempt:
+                    break
+                try:
+                    delay = float(response.headers.get("retry-after", "0"))
+                except (ValueError, TypeError):
+                    delay = 0
+                if not 0 < delay <= 60:
+                    break
+                time.sleep(delay)
         except requests.Timeout:
             raise ModelError("The tutor took too long to respond. Please try again shortly.") from None
         except requests.RequestException:
@@ -188,6 +203,16 @@ class GroqTutor(LocalTutor):
         if not response.ok:
             if response.status_code == 429:
                 raise ModelError("The tutor has reached its shared free usage limit. Please wait a minute and try again; daily limits reset later.")
+            if response.status_code == 400:
+                try:
+                    error = response.json().get("error", {})
+                    if error.get("code") == "json_validate_failed":
+                        content = error.get("failed_generation", "")
+                        # Let the existing graph validation/one-repair policy handle
+                        # provider-side schema failures too; never display the body.
+                        return {"choices": [{"finish_reason": "stop", "message": {"content": content}}]}
+                except (ValueError, AttributeError, TypeError):
+                    pass
             hints = {
                 400: "The tutor could not process this request. Try shorter notes.",
                 401: "The tutor's connection needs attention from the app owner.",

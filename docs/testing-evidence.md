@@ -2,8 +2,9 @@
 
 ## Recorded verification
 
-- **Combined suite: 48 tests passed**, comprising 47 backend checks and 1 complete Streamlit interface journey. Latest result file: `artifacts/test-results/test-results.xml`.
-- The live script uses `qwen2.5-7b-instruct` for action selection, quizzes, and expanded teaching. Its latest actual status, actions, teaching history, scores, and trace are recorded in `artifacts/live-verification/session.json` and `session.md`.
+- **Current combined suite: 61 tests passed**, including Groq credentials/protocol, provider-side schema repair, short rate-limit retries, and the complete Streamlit interface journey. Result: `artifacts/test-results/groq-tests.xml`. The earlier 48-test result remains in `artifacts/test-results/test-results.xml`.
+- **Live Groq flow passed** with `openai/gpt-oss-20b`: quiz, scripted wrong answers (0%), three generated teaching cards, focused follow-up quiz, scripted correct answers (100%), and `finish`. Final status: `mastered`. Evidence: `artifacts/groq-live-verification/session.json` and `session.md`. Short free-tier token limits occurred and were handled by a bounded wait/retry. This verifies live inference locally; public hosting must be checked separately.
+- The original local Qwen run is retained in `artifacts/live-verification/session.json` and `session.md`; it is separate from the current Groq evidence.
 - Live answers are scripted to exercise decisions, not to represent a student. The agent can offer more practice after reaching the goal or recommend finishing below it; the script records those choices honestly.
 
 The completed live agent run passed: Qwen selected `create_quiz`, then three `explain_concept` actions for missed concepts, then `create_quiz` with application questions, then `finish`. The scripted scores were 0% and 100%. Three expanded teaching cards and their original source references are retained in `teaching_history`. This demonstrates actual model-selected actions and feedback, not an evaluation of student learning or a guarantee that every explanation is correct.
@@ -67,4 +68,4 @@ Before presenting, manually read each generated question and answer key. Add scr
 .\.venv\Scripts\python.exe scripts/live_smoke.py
 ```
 
-The second command uses the configured provider: Groq by default, or LM Studio when explicitly selected. It needs a real connection and replaces the saved live verification files with the new actual run. The earlier Qwen artifacts are historical evidence and do not establish that Groq inference has passed. The separate `artifacts/test-results/groq-tests.xml` records 58 passing automated tests, including credential handling, the Groq protocol, and safe rate-limit errors; those provider tests use mocks.
+The second command uses the configured provider: Groq by default, or LM Studio when explicitly selected. It needs a real connection and replaces the saved live verification files with the new actual run. The retained Qwen artifacts are historical evidence; the Groq verification was saved separately in `artifacts/groq-live-verification/`. Automated provider tests use mocks, while those live Groq artifacts record actual inference.

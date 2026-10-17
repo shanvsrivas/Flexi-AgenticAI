@@ -67,6 +67,8 @@ this setup suits a small class demo. Several model calls are needed for each
 study session. Per-minute limits may require waiting; daily limits may require
 returning later. No automatic paid upgrade or alternative-model fallback is
 implemented. Check the account's Limits page for its current allowance.
+The client retries a short provider rate limit once after the supplied waiting
+period (up to 60 seconds); longer waits and exhausted limits show a clear message.
 
 Community Cloud may put an inactive app to sleep. Opening the public link can
 wake it again. Keep the hosting account, GitHub repository, and Groq key active

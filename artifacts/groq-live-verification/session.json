@@ -1,0 +1,354 @@
+{
+  "project": "StudyBuddy",
+  "exported_at": "2026-10-17T12:59:46.770140+05:30",
+  "mode": "live",
+  "model": "openai/gpt-oss-20b",
+  "status": "mastered",
+  "target": 80,
+  "difficulty": "Standard",
+  "history": [
+    {
+      "correct": 0,
+      "total": 3,
+      "score": 0.0,
+      "weak_topics": [
+        "AI agents",
+        "LangGraph state",
+        "Conditional edges"
+      ],
+      "items": [
+        {
+          "topic": "AI agents",
+          "question": "Which statement best describes an AI agent?",
+          "options": [
+            "It only generates text without any decision-making.",
+            "It observes information, decides actions, and uses tools to achieve a goal.",
+            "It is a static rule-based system that never changes its behavior.",
+            "It only stores data but never acts on it."
+          ],
+          "correct_index": 1,
+          "explanation": "An AI agent observes information, decides what to do, and takes actions using tools to work toward a goal, combining a language model with a control loop.",
+          "source_id": "S01",
+          "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools.",
+          "selected_index": 2,
+          "is_correct": false
+        },
+        {
+          "topic": "LangGraph state",
+          "question": "What role does LangGraph state play in a workflow?",
+          "options": [
+            "It determines the final output of the graph.",
+            "It stores shared information that nodes read and update.",
+            "It replaces the need for conditional edges.",
+            "It is only used for logging purposes."
+          ],
+          "correct_index": 1,
+          "explanation": "LangGraph state holds shared information such as notes, questions, answers, scores, and weak topics that nodes can read and modify during execution.",
+          "source_id": "S02",
+          "evidence": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it.",
+          "selected_index": 2,
+          "is_correct": false
+        },
+        {
+          "topic": "Conditional edges",
+          "question": "In a quiz scenario, what happens when a student scores 75%?",
+          "options": [
+            "The session automatically ends.",
+            "The student is routed to revision.",
+            "The student receives a congratulatory message.",
+            "The graph restarts from the beginning."
+          ],
+          "correct_index": 1,
+          "explanation": "A conditional edge routes the next node based on the current state; a score below 80% directs the student to revision, while 80% or higher would finish the session.",
+          "source_id": "S03",
+          "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.",
+          "selected_index": 2,
+          "is_correct": false
+        }
+      ],
+      "round": 1,
+      "difficulty": "Standard",
+      "question_style": "recall"
+    },
+    {
+      "correct": 3,
+      "total": 3,
+      "score": 100.0,
+      "weak_topics": [],
+      "items": [
+        {
+          "topic": "AI agents",
+          "question": "Which of the following best describes the primary function of an AI agent?",
+          "options": [
+            "It only generates text without any decision-making capability.",
+            "It observes information, decides actions, and uses tools to achieve a goal.",
+            "It is a purely reactive system that only follows pre-programmed rules.",
+            "It is a static database of facts used for retrieval."
+          ],
+          "correct_index": 1,
+          "explanation": "An AI agent observes information, decides what to do, and takes actions using tools to work toward a goal, combining a language model with a control loop and tools.",
+          "source_id": "S01",
+          "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools.",
+          "selected_index": 1,
+          "is_correct": true
+        },
+        {
+          "topic": "LangGraph state",
+          "question": "What type of information is typically stored in LangGraph state during a quiz workflow?",
+          "options": [
+            "The entire history of user interactions permanently.",
+            "Shared data such as notes, scores, and weak topics between nodes.",
+            "A list of all possible next nodes in the graph.",
+            "Only the final quiz result after completion."
+          ],
+          "correct_index": 1,
+          "explanation": "LangGraph state holds shared information passed between graph nodes, including the student's notes, generated questions, answers, scores, and weak topics.",
+          "source_id": "S02",
+          "evidence": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it.",
+          "selected_index": 1,
+          "is_correct": true
+        },
+        {
+          "topic": "Conditional edges",
+          "question": "In a quiz scenario, what happens when a student's score is below 80 percent?",
+          "options": [
+            "The quiz ends immediately with a failure message.",
+            "The student is routed to a revision node via a conditional edge.",
+            "The system ignores the score and continues to the next question.",
+            "The score is reset to zero and the quiz restarts."
+          ],
+          "correct_index": 1,
+          "explanation": "A conditional edge chooses the next node based on the current state; a score below 80 percent routes the student to a revision node, while a score of at least 80 percent can finish the session.",
+          "source_id": "S03",
+          "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.",
+          "selected_index": 1,
+          "is_correct": true
+        }
+      ],
+      "round": 2,
+      "difficulty": "Standard",
+      "question_style": "recall"
+    }
+  ],
+  "workflow_trace": [
+    {
+      "node": "prepare_notes",
+      "detail": "Prepared 5 labelled source sections.",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected create_quiz: The student has prepared notes covering key concepts. A standard recall quiz will assess understanding of these topics and help identify weak areas before moving to application questions.",
+      "round": 1
+    },
+    {
+      "node": "create_quiz",
+      "detail": "Executed selected quiz tool: Standard, recall; 4 source sections.",
+      "round": 1
+    },
+    {
+      "node": "validate_quiz",
+      "detail": "Schema, options, sources, and question checks passed.",
+      "round": 1
+    },
+    {
+      "node": "await_answers",
+      "detail": "Student submitted every answer; resumed the saved graph.",
+      "round": 1
+    },
+    {
+      "node": "grade_answers",
+      "detail": "Answer-key scoring: 0/3 = 0.0%.",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected explain_concept: All three student answers were incorrect, indicating conceptual misunderstandings. An explain_concept action will clarify each topic, compare the mistaken and correct statements, and provide background to solidify understanding.",
+      "round": 1
+    },
+    {
+      "node": "explain_concept",
+      "detail": "Executed model-selected teaching tool for: AI agents, LangGraph state, Conditional edges",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected create_quiz: The student struggled with basic recall of key concepts after the explanations. A standard recall quiz will reinforce understanding and identify remaining weak areas.",
+      "round": 1
+    },
+    {
+      "node": "await_revision",
+      "detail": "Student chose retry.",
+      "round": 1
+    },
+    {
+      "node": "create_quiz",
+      "detail": "Executed selected quiz tool: Standard, recall; 4 source sections.",
+      "round": 2
+    },
+    {
+      "node": "validate_quiz",
+      "detail": "Quiz held back: questions.0.options: List should have at most 4 items after validation, not 5; questions.1.options: List should have at most 4 items after validation, not 5; questions.2.options: List should have at most 4 items after validation, not 5",
+      "round": 2
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected create_quiz: The student struggled with all three topics; a new quiz will assess recall and guide further revision.",
+      "round": 2
+    },
+    {
+      "node": "create_quiz",
+      "detail": "Executed selected quiz tool: Standard, recall; 4 source sections.",
+      "round": 2
+    },
+    {
+      "node": "validate_quiz",
+      "detail": "Schema, options, sources, and question checks passed.",
+      "round": 2
+    },
+    {
+      "node": "await_answers",
+      "detail": "Student submitted every answer; resumed the saved graph.",
+      "round": 2
+    },
+    {
+      "node": "grade_answers",
+      "detail": "Answer-key scoring: 3/3 = 100.0%.",
+      "round": 2
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected finish: The student achieved a perfect score on the quiz, meeting the score goal. No further practice is needed.",
+      "round": 2
+    },
+    {
+      "node": "finish",
+      "detail": "Agent recommended finishing: The student achieved a perfect score on the quiz, meeting the score goal. No further practice is needed.",
+      "round": 2
+    }
+  ],
+  "source_sections": [
+    {
+      "id": "S01",
+      "text": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools."
+    },
+    {
+      "id": "S02",
+      "text": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it."
+    },
+    {
+      "id": "S03",
+      "text": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session."
+    },
+    {
+      "id": "S04",
+      "text": "Tools and reliable scoring\nA tool is a function that an agent workflow can use to perform a specific task, such as retrieving notes or calculating a quiz score. For multiple-choice questions, comparing selected option indices with an answer key gives deterministic scoring without another LLM call."
+    },
+    {
+      "id": "S05",
+      "text": "Checkpoints and human input\nA checkpointer saves graph state at execution steps. An interrupt pauses a graph until the student provides input. Resuming with Command and the same thread ID lets the workflow continue from its saved checkpoint. In-memory checkpoints are lost when the application process restarts."
+    }
+  ],
+  "validation_errors": [],
+  "agent_actions": [
+    {
+      "round": 1,
+      "tool": "create_quiz",
+      "topics": [
+        "AI agents",
+        "LangGraph state",
+        "Conditional edges"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student has prepared notes covering key concepts. A standard recall quiz will assess understanding of these topics and help identify weak areas before moving to application questions.",
+      "question": "What is the primary function of a conditional edge in a LangGraph?"
+    },
+    {
+      "round": 1,
+      "tool": "explain_concept",
+      "topics": [
+        "AI agents",
+        "LangGraph state",
+        "Conditional edges"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "All three student answers were incorrect, indicating conceptual misunderstandings. An explain_concept action will clarify each topic, compare the mistaken and correct statements, and provide background to solidify understanding.",
+      "question": ""
+    },
+    {
+      "round": 1,
+      "tool": "create_quiz",
+      "topics": [
+        "AI agents",
+        "LangGraph state",
+        "Conditional edges"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student struggled with basic recall of key concepts after the explanations. A standard recall quiz will reinforce understanding and identify remaining weak areas.",
+      "question": "Which of the following best describes the role of LangGraph state in a workflow?\nA) It determines the next node in a fixed sequence.\nB) It stores shared information that nodes read and update.\nC) It replaces the need for conditional edges.\nD) It is only used for final scoring."
+    },
+    {
+      "round": 2,
+      "tool": "create_quiz",
+      "topics": [
+        "AI agents",
+        "LangGraph state",
+        "Conditional edges"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student struggled with all three topics; a new quiz will assess recall and guide further revision.",
+      "question": ""
+    },
+    {
+      "round": 2,
+      "tool": "finish",
+      "topics": [],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student achieved a perfect score on the quiz, meeting the score goal. No further practice is needed.",
+      "question": ""
+    }
+  ],
+  "teaching_history": [
+    {
+      "round": 1,
+      "topic": "AI agents",
+      "misconception": "You might think an AI agent only writes text and never makes decisions or uses tools.",
+      "explanation": "A true AI agent watches the environment, decides what to do next, and then acts—often by calling external tools—so it can reach a goal. It’s not just a language model that spits out sentences; it’s a loop that observes, plans, and executes.",
+      "example": "Imagine a tutoring bot that sees a student’s low quiz score, decides to offer extra practice, and then calls a math solver tool to generate new problems. The bot’s actions are guided by its observations and a goal of improving learning.",
+      "extra_info": "The control loop lets the agent react to changing states, unlike a static script. This dynamic behavior is what distinguishes agents from simple models.",
+      "check_question": "How does an AI agent’s use of a control loop and tools enable it to adapt to a student’s needs?",
+      "source_id": "S01",
+      "method": "explain_concept",
+      "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools."
+    },
+    {
+      "round": 1,
+      "topic": "LangGraph state",
+      "misconception": "Some think state is only for final output or logging, not for ongoing data sharing.",
+      "explanation": "In LangGraph, state is a shared data store that nodes read from and write to as the workflow runs. It holds notes, questions, answers, scores, and weak topics, allowing later nodes to build on earlier work.",
+      "example": "During a lesson, a node records a student’s answer and updates the score in state. A later node reads that score to decide whether to give feedback or move on, all using the same state object.",
+      "extra_info": "Because state is mutable, it can capture the evolving context of a conversation, making the graph behave like a stateful program rather than a sequence of isolated steps.",
+      "check_question": "Why is it important that LangGraph state is shared and mutable across nodes?",
+      "source_id": "S02",
+      "method": "explain_concept",
+      "evidence": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it."
+    },
+    {
+      "round": 1,
+      "topic": "Conditional edges",
+      "misconception": "You might think all edges in a graph behave the same, always leading to the same next node.",
+      "explanation": "Conditional edges examine the current state and choose the next node based on conditions, such as a quiz score. They allow the workflow to branch dynamically instead of following a fixed path.",
+      "example": "If a student scores 75% on a quiz, a conditional edge routes them to a revision node. If they score 85%, the edge sends them to a completion node, demonstrating different paths from the same starting point.",
+      "extra_info": "Conditional edges make the graph responsive to real-time data, turning a linear flow into a decision tree that adapts to user performance.",
+      "check_question": "How does a conditional edge change the flow of a graph compared to a normal edge?",
+      "source_id": "S03",
+      "method": "explain_concept",
+      "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session."
+    }
+  ]
+}

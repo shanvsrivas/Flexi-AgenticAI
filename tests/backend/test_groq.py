@@ -56,6 +56,10 @@ def test_groq_errors_never_include_credentials_or_provider_body(monkeypatch, sta
         ok = False
         status_code = status
         text = "private-provider-body"
+        headers = {}
+
+        def json(self):
+            return {"error": {"code": "unrelated_error", "message": self.text}}
 
     monkeypatch.setattr("studybuddy.llm.requests.request", lambda *a, **kw: Response())
     with pytest.raises(ModelError) as error:
@@ -64,6 +68,55 @@ def test_groq_errors_never_include_credentials_or_provider_body(monkeypatch, sta
     assert "private-provider-body" not in str(error.value)
     if status == 429:
         assert "free usage limit" in str(error.value)
+
+
+def test_groq_schema_failure_enters_existing_repair_path(monkeypatch):
+    class Response:
+        ok = False
+        status_code = 400
+
+        def json(self):
+            return {"error": {"code": "json_validate_failed", "failed_generation": '{"tool":"invalid_tool"}'}}
+
+    monkeypatch.setattr("studybuddy.llm.requests.request", lambda *a, **kw: Response())
+    assert GroqTutor(api_key="test").decide({}, []) == {"tool": "invalid_tool"}
+
+
+def test_groq_waits_once_for_short_rate_limit(monkeypatch):
+    attempts = []
+    sleeps = []
+
+    class Response:
+        status_code = 429
+        headers = {"retry-after": "2.5"}
+
+        @property
+        def ok(self):
+            return len(attempts) > 1
+
+        def json(self):
+            return {"data": [{"id": GROQ_MODEL}]}
+
+    def request(*args, **kwargs):
+        attempts.append(True)
+        return Response()
+
+    monkeypatch.setattr("studybuddy.llm.requests.request", request)
+    monkeypatch.setattr("studybuddy.llm.time.sleep", sleeps.append)
+    assert GroqTutor(api_key="test").list_models() == [GROQ_MODEL]
+    assert len(attempts) == 2 and sleeps == [2.5]
+
+
+def test_groq_does_not_wait_for_daily_limit(monkeypatch):
+    class Response:
+        ok = False
+        status_code = 429
+        headers = {"retry-after": "3600"}
+
+    monkeypatch.setattr("studybuddy.llm.requests.request", lambda *a, **kw: Response())
+    monkeypatch.setattr("studybuddy.llm.time.sleep", lambda _: pytest.fail("Must not wait for a daily limit"))
+    with pytest.raises(ModelError, match="free usage limit"):
+        GroqTutor(api_key="test").list_models()
 
 
 def test_groq_timeout_is_safe_and_bounded(monkeypatch):
