@@ -1,0 +1,14 @@
+AI agents
+An AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools.
+
+LangGraph state
+State is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it.
+
+Conditional edges
+A normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.
+
+Tools and reliable scoring
+A tool is a function that an agent workflow can use to perform a specific task, such as retrieving notes or calculating a quiz score. For multiple-choice questions, comparing selected option indices with an answer key gives deterministic scoring without another LLM call.
+
+Checkpoints and human input
+A checkpointer saves graph state at execution steps. An interrupt pauses a graph until the student provides input. Resuming with Command and the same thread ID lets the workflow continue from its saved checkpoint. In-memory checkpoints are lost when the application process restarts.

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.streamlit/secrets.toml
+artifacts/private/
+
+# Original personal and classroom attachments stay in the local submission folder.
+docs/certificates/
+docs/requirements/

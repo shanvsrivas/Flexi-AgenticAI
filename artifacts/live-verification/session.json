@@ -1,0 +1,364 @@
+{
+  "project": "StudyBuddy",
+  "exported_at": "2026-10-17T04:45:30.684087+05:30",
+  "mode": "live",
+  "model": "qwen2.5-7b-instruct",
+  "status": "mastered",
+  "target": 80,
+  "difficulty": "Standard",
+  "history": [
+    {
+      "correct": 0,
+      "total": 3,
+      "score": 0.0,
+      "weak_topics": [
+        "AI Agents",
+        "LangGraph State",
+        "Conditional Edges"
+      ],
+      "items": [
+        {
+          "topic": "AI Agents",
+          "question": "What does an AI agent do when it observes information?",
+          "options": [
+            "It stores the information for future use.",
+            "It decides what actions to take based on the observed information.",
+            "It ignores the information and continues with its current task.",
+            "It sends the information back to the source."
+          ],
+          "correct_index": 1,
+          "explanation": "An AI agent observes information, decides what to do, and takes actions using tools.",
+          "source_id": "S01",
+          "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools.",
+          "selected_index": 2,
+          "is_correct": false
+        },
+        {
+          "topic": "LangGraph State",
+          "question": "Which of the following is NOT a component that can be stored in LangGraph state?",
+          "options": [
+            "Generated questions",
+            "Student's notes",
+            "Weak topics",
+            "AI agent code"
+          ],
+          "correct_index": 3,
+          "explanation": "LangGraph state can store student's notes, generated questions, answers, scores, and weak topics.",
+          "source_id": "S02",
+          "evidence": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it.",
+          "selected_index": 0,
+          "is_correct": false
+        },
+        {
+          "topic": "Conditional Edges",
+          "question": "In a quiz scenario using conditional edges, what action is taken if the score is below 80 percent?",
+          "options": [
+            "The session ends immediately.",
+            "The student is given a pass/fail grade.",
+            "The quiz restarts from the beginning.",
+            "The next node is a revision section."
+          ],
+          "correct_index": 3,
+          "explanation": "A score below 80 percent can route to a revision section.",
+          "source_id": "S03",
+          "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.",
+          "selected_index": 0,
+          "is_correct": false
+        }
+      ],
+      "round": 1,
+      "difficulty": "Standard",
+      "question_style": "recall"
+    },
+    {
+      "correct": 3,
+      "total": 3,
+      "score": 100.0,
+      "weak_topics": [],
+      "items": [
+        {
+          "topic": "AI Agents",
+          "question": "An AI agent is given a task to help a student prepare for a math exam. Which of the following best describes what the agent does when it observes the student’s weak topics in LangGraph state?",
+          "options": [
+            "It ignores the weak topics and continues with the next lesson.",
+            "It generates practice questions targeted at those weak areas.",
+            "It asks the student to provide more information about their interests.",
+            "It sends a notification to the teacher about the weak topics."
+          ],
+          "correct_index": 1,
+          "explanation": "The agent uses the observed weak topics in LangGraph state to generate relevant and targeted practice questions, helping the student improve in those areas.",
+          "source_id": "S01",
+          "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools.",
+          "selected_index": 1,
+          "is_correct": true
+        },
+        {
+          "topic": "LangGraph State",
+          "question": "During a quiz session, if a student's score is below 80 percent, which of the following actions will an AI agent take based on conditional edges?",
+          "options": [
+            "It will end the session and send a report to the teacher.",
+            "It will route to a revision section where more practice questions are available.",
+            "It will ask for human input to decide the next steps.",
+            "It will save the current state in memory and restart from the beginning."
+          ],
+          "correct_index": 1,
+          "explanation": "The conditional edge will direct the flow of the quiz to a revision section, providing more practice questions before allowing the student to continue.",
+          "source_id": "S03",
+          "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.",
+          "selected_index": 1,
+          "is_correct": true
+        },
+        {
+          "topic": "Conditional Edges",
+          "question": "In a scenario where an AI agent is managing a quiz session, which statement best describes how conditional edges are used?",
+          "options": [
+            "Conditional edges always lead to the same next node regardless of the current state.",
+            "Conditional edges choose the next node based on the student's score in LangGraph state.",
+            "Conditional edges are only used for routing between different graph nodes but not within a single quiz session.",
+            "Conditional edges are irrelevant when managing quiz sessions and are only used for logging purposes."
+          ],
+          "correct_index": 1,
+          "explanation": "Conditional edges route to the next node based on the current state, such as directing students with low scores to revision sections.",
+          "source_id": "S03",
+          "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session.",
+          "selected_index": 1,
+          "is_correct": true
+        }
+      ],
+      "round": 2,
+      "difficulty": "Standard",
+      "question_style": "application"
+    }
+  ],
+  "workflow_trace": [
+    {
+      "node": "prepare_notes",
+      "detail": "Prepared 5 labelled source sections.",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected create_quiz: Starting with recall questions on the introduced topics to assess basic understanding.",
+      "round": 1
+    },
+    {
+      "node": "create_quiz",
+      "detail": "Executed selected quiz tool: Standard, recall; 4 source sections.",
+      "round": 1
+    },
+    {
+      "node": "validate_quiz",
+      "detail": "Schema, options, sources, and question checks passed.",
+      "round": 1
+    },
+    {
+      "node": "await_answers",
+      "detail": "Student submitted every answer; resumed the saved graph.",
+      "round": 1
+    },
+    {
+      "node": "grade_answers",
+      "detail": "Answer-key scoring: 0/3 = 0.0%.",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected explain_concept: The student's answer is incorrect and needs a clear explanation of the concept.",
+      "round": 1
+    },
+    {
+      "node": "explain_concept",
+      "detail": "Executed model-selected teaching tool for: AI Agents",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected explain_concept: The student incorrectly identified 'AI agent code' as a component of LangGraph state, indicating a need for further clarification on what can and cannot be stored in the state.",
+      "round": 1
+    },
+    {
+      "node": "explain_concept",
+      "detail": "Executed model-selected teaching tool for: LangGraph State",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected explain_concept: The student has not yet grasped the concept of conditional edges, as evidenced by their incorrect answer in the latest quiz.",
+      "round": 1
+    },
+    {
+      "node": "explain_concept",
+      "detail": "Executed model-selected teaching tool for: Conditional Edges",
+      "round": 1
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected create_quiz: The student has shown conceptual confusion and difficulty applying knowledge, so creating a quiz with application questions will help reinforce the material.",
+      "round": 1
+    },
+    {
+      "node": "await_revision",
+      "detail": "Student chose retry.",
+      "round": 1
+    },
+    {
+      "node": "create_quiz",
+      "detail": "Executed selected quiz tool: Standard, application; 4 source sections.",
+      "round": 2
+    },
+    {
+      "node": "validate_quiz",
+      "detail": "Schema, options, sources, and question checks passed.",
+      "round": 2
+    },
+    {
+      "node": "await_answers",
+      "detail": "Student submitted every answer; resumed the saved graph.",
+      "round": 2
+    },
+    {
+      "node": "grade_answers",
+      "detail": "Answer-key scoring: 3/3 = 100.0%.",
+      "round": 2
+    },
+    {
+      "node": "select_action",
+      "detail": "Selected finish: The student has achieved the score goal of 80% and all previous answers were correct. There are no unreviewed topics, so finishing is appropriate.",
+      "round": 2
+    },
+    {
+      "node": "finish",
+      "detail": "Agent recommended finishing: The student has achieved the score goal of 80% and all previous answers were correct. There are no unreviewed topics, so finishing is appropriate.",
+      "round": 2
+    }
+  ],
+  "source_sections": [
+    {
+      "id": "S01",
+      "text": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools."
+    },
+    {
+      "id": "S02",
+      "text": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it."
+    },
+    {
+      "id": "S03",
+      "text": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session."
+    },
+    {
+      "id": "S04",
+      "text": "Tools and reliable scoring\nA tool is a function that an agent workflow can use to perform a specific task, such as retrieving notes or calculating a quiz score. For multiple-choice questions, comparing selected option indices with an answer key gives deterministic scoring without another LLM call."
+    },
+    {
+      "id": "S05",
+      "text": "Checkpoints and human input\nA checkpointer saves graph state at execution steps. An interrupt pauses a graph until the student provides input. Resuming with Command and the same thread ID lets the workflow continue from its saved checkpoint. In-memory checkpoints are lost when the application process restarts."
+    }
+  ],
+  "validation_errors": [],
+  "agent_actions": [
+    {
+      "round": 1,
+      "tool": "create_quiz",
+      "topics": [
+        "AI agents",
+        "LangGraph state"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "Starting with recall questions on the introduced topics to assess basic understanding.",
+      "question": ""
+    },
+    {
+      "round": 1,
+      "tool": "explain_concept",
+      "topics": [
+        "AI Agents"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student's answer is incorrect and needs a clear explanation of the concept.",
+      "question": "What does an AI agent do when it observes information?"
+    },
+    {
+      "round": 1,
+      "tool": "explain_concept",
+      "topics": [
+        "LangGraph State"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student incorrectly identified 'AI agent code' as a component of LangGraph state, indicating a need for further clarification on what can and cannot be stored in the state.",
+      "question": "Which of the following is NOT a component that can be stored in LangGraph state? (Standard difficulty)"
+    },
+    {
+      "round": 1,
+      "tool": "explain_concept",
+      "topics": [
+        "Conditional Edges"
+      ],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student has not yet grasped the concept of conditional edges, as evidenced by their incorrect answer in the latest quiz.",
+      "question": "What happens when a score is below 80 percent in a quiz using conditional edges?"
+    },
+    {
+      "round": 1,
+      "tool": "create_quiz",
+      "topics": [
+        "AI Agents",
+        "LangGraph State"
+      ],
+      "difficulty": "Standard",
+      "question_style": "application",
+      "reason": "The student has shown conceptual confusion and difficulty applying knowledge, so creating a quiz with application questions will help reinforce the material.",
+      "question": "Given an AI agent observing new information about a task environment, how should it proceed to achieve its goal?"
+    },
+    {
+      "round": 2,
+      "tool": "finish",
+      "topics": [],
+      "difficulty": "Standard",
+      "question_style": "recall",
+      "reason": "The student has achieved the score goal of 80% and all previous answers were correct. There are no unreviewed topics, so finishing is appropriate.",
+      "question": ""
+    }
+  ],
+  "teaching_history": [
+    {
+      "round": 1,
+      "topic": "AI Agents",
+      "misconception": "A common mix-up is that an AI agent simply stores the observed information without processing it.",
+      "explanation": "An AI agent observes information, decides what to do, and takes actions using tools. The key point here is that the agent makes decisions based on the observed data, not just storing it for later use.",
+      "example": "Imagine an AI assistant observing your calendar entries. It doesn't merely save these entries; instead, it uses them to remind you of upcoming meetings or suggest scheduling changes.",
+      "extra_info": "While storage is part of how an AI agent operates, the primary function is decision-making and action-taking based on observed information.",
+      "check_question": "What does an AI agent do with observed data besides storing it?",
+      "source_id": "S01",
+      "method": "explain_concept",
+      "evidence": "AI agents\nAn AI agent observes information, decides what to do, and takes actions using tools to work towards a goal. A language model produces text; an agent combines a model with a control loop and tools."
+    },
+    {
+      "round": 1,
+      "topic": "LangGraph State",
+      "misconception": "The student might think that AI agent code can be stored in LangGraph state.",
+      "explanation": "LangGraph state is designed to store shared information like the student's notes, generated questions, answers, scores, and weak topics. It does not include executable code such as an AI agent. The state primarily holds data relevant for the graph nodes' operations, not full program logic or agents.",
+      "example": "Imagine a LangGraph where each node represents a quiz question. The state would store the student's answers to these questions, their scores, and any notes they took during the session. However, it wouldn't contain the code that generates new questions or evaluates them; those are separate processes.",
+      "extra_info": "While the state can hold various data types, it is not meant for storing executable scripts or full-fledged AI agents. These would be part of the application logic outside the LangGraph's state management.",
+      "check_question": "What type of information should NOT be stored in LangGraph state according to the passage?",
+      "source_id": "S02",
+      "method": "explain_concept",
+      "evidence": "LangGraph state\nState is shared information passed between graph nodes. It can store the student's notes, generated questions, answers, scores, and weak topics. A node reads the current state and returns updates to it."
+    },
+    {
+      "round": 1,
+      "topic": "Conditional Edges",
+      "misconception": "A common mix-up is thinking that a score below 80 percent ends the session immediately.",
+      "explanation": "In a quiz scenario using conditional edges, if the score is below 80 percent, it does not end the session. Instead, a conditional edge allows the system to route the student to a revision section where they can review material before potentially retaking the quiz or finishing the session with additional preparation.",
+      "example": "Imagine you're taking an online math test. If your score is below 80 percent, instead of ending the test, it might automatically direct you to a set of practice problems related to the topics you struggled with.",
+      "extra_info": "This routing ensures that students can address their weaknesses before moving on, which can improve overall understanding and performance.",
+      "check_question": "What happens if your score is below 80 percent in this quiz?",
+      "source_id": "S03",
+      "method": "explain_concept",
+      "evidence": "Conditional edges\nA normal edge always leads to the same next node. A conditional edge chooses the next node based on the current state. In a quiz, a score below 80 percent can route to revision, while a score of at least 80 percent can finish the session."
+    }
+  ]
+}

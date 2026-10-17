@@ -1,0 +1,31 @@
+html,body,[class*="css"] {font-family:'DM Sans',sans-serif;}
+.block-container {max-width:1200px;padding-top:2.5rem;padding-bottom:3rem;}
+header[data-testid="stHeader"] {background:transparent;}
+[data-testid="stSidebar"] {border-right:1px solid #dedfd3;}
+[data-testid="stSidebar"] .block-container {padding-top:2rem;}
+h1,h2,h3 {letter-spacing:-.035em;}
+h1 {font-family:'Lora',Georgia,serif!important;font-weight:500!important;font-size:3.3rem!important;line-height:1.15!important;}
+h2 {font-family:'Lora',Georgia,serif!important;font-weight:500!important;}
+.eyebrow {font-size:.7rem;font-weight:700;letter-spacing:.17em;color:#6e7f66;margin-bottom:1rem;}
+.brand {font-size:1.45rem;font-weight:700;letter-spacing:-.06em;margin-bottom:.2rem;}
+.brand span {color:#698661;}
+.subtle {color:#76806f;font-size:.85rem;}
+.lead {font-size:1.05rem;color:#697461;line-height:1.7;max-width:650px;margin-bottom:1.7rem;}
+.pill {display:inline-block;border:1px solid #d9decb;border-radius:30px;padding:.32rem .75rem;font-size:.72rem;color:#547047;background:#f2f4e9;}
+.step {border-top:1px solid #dde1d3;padding:1.05rem 0;}
+.step b {font-size:.93rem;} .step p {font-size:.85rem;color:#75806e;margin:.3rem 0 0;line-height:1.6;}
+.step-num {display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border-radius:50%;background:#e5ebda;color:#4d6c43;margin-right:.6rem;font-size:.75rem;}
+.paper {background:#f0f1e7;border:1px solid #e0e3d4;border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
+.paper-title {font-family:'Lora',Georgia,serif;font-size:1.35rem;margin-bottom:.5rem;}
+.paper p {color:#6c7963;font-size:.88rem;line-height:1.65;margin:0;}
+.footer {border-top:1px solid #e1e4d8;margin-top:2rem;padding-top:1rem;color:#84907d;font-size:.75rem;}
+[data-testid="stMetric"] {background:#f0f1e7;border:1px solid #e0e3d4;border-radius:12px;padding:1rem;}
+[data-testid="stMetricValue"] {font-family:'Lora',Georgia,serif;}
+[data-testid="stForm"] {background:#fffefa;border:1px solid #e0e3d4;border-radius:14px;}
+div.stButton > button,div.stDownloadButton > button {border-radius:9px;}
+.stTextArea textarea {font-size:.9rem;line-height:1.7;}
+@media(max-width:700px) {h1 {font-size:2.3rem!important;} .block-container {padding-top:1.5rem;}}
+@media(max-width:850px) {
+ [data-testid="stMain"] [data-testid="stHorizontalBlock"] {flex-direction:column;}
+ [data-testid="stMain"] [data-testid="stColumn"] {width:100%!important;flex:1 1 auto!important;}
+}

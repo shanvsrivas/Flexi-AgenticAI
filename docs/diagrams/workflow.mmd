@@ -1,0 +1,45 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	prepare_notes(prepare_notes)
+	select_action(select_action)
+	tutor_agent(tutor_agent)
+	validate_quiz(validate_quiz)
+	await_answers(await_answers)
+	grade_answers(grade_answers)
+	teach_concepts(teach_concepts)
+	await_revision(await_revision)
+	await_clarification(await_clarification)
+	complete(complete)
+	finished(finished)
+	generation_failed(generation_failed)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> prepare_notes;
+	await_answers --> grade_answers;
+	await_clarification --> select_action;
+	await_revision -.-> finished;
+	await_revision -.-> tutor_agent;
+	grade_answers --> select_action;
+	prepare_notes --> select_action;
+	select_action -.-> await_clarification;
+	select_action -.-> await_revision;
+	select_action -.-> complete;
+	select_action -.-> generation_failed;
+	select_action -.-> teach_concepts;
+	select_action -.-> tutor_agent;
+	teach_concepts -.-> generation_failed;
+	teach_concepts -.-> select_action;
+	tutor_agent --> validate_quiz;
+	validate_quiz -.-> await_answers;
+	validate_quiz -.-> generation_failed;
+	validate_quiz -.-> select_action;
+	complete --> __end__;
+	finished --> __end__;
+	generation_failed --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
